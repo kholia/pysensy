@@ -1,0 +1,428 @@
+<HTML>
+<HEAD>
+<TITLE>Infra Red Explained - Remotes Homepage</TITLE>
+
+<BODY text=#000000 vlink=#666666 alink=#996600 link=#3366cc bgcolor=#ffffff
+background=/hr-images/bg.jpg>
+
+<font face="Times New Roman, Arial, Helvetica">
+<center>
+<script type="text/javascript"><!--
+google_ad_client = "pub-2040680936936450";
+/* 468x60, created 4/17/09 */
+google_ad_slot = "7283198346";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+<p>
+
+
+
+
+<center>
+<B><FONT SIZE=5><P>Infra Red Signals - Pulse Width Method.</P>
+by Barry Gordon.
+</B></FONT></center>
+<P> </P>
+<blockquote>
+<P>This document describes the format of learned IR codes as they are displayed in ProntoEdit program. It is assumed that the reader has a working familiarity with the Philips Pronto remote control and the ProntoEdit software system.</P>
+
+<U><P>Acknowledgments:</U>  This document could not have been possible for me to write without  the assistance of a lot of people who contributed their time and effort to helping me understand the various parts of the ProntoEdit IR display format. I would like to thank; AHP (A Helpful Person), Jack Schultz, Manu Duarte, Timm, CDecker, and others. Please pardon my use of the BBS handles, but in many cases that is the only way I know them.</P>
+
+<I><U><P>Warning:.</U>  This document will give the reader enough information to develop and hand enter IR codes rather than learning them from a remote.  That is not the intent of the document, merely a byproduct of the knowledge you can gain. Many devices controlled by IR remotes, in Particular TV’s, have undocumented IR code sequences used for servicing the equipment by factory trained technicians in possession of detailed service manuals and test equipment.  By causing a service code to be sent to your TV or other device, you may place it in a state where it no longer operates as desired, or at all.  An example of this might be the resetting of all convergence offsets, or altering the width or height of the picture.  Be careful, if you are not sure of what the outcome might be, perhaps you should not do it.</P>
+</I>
+<B><P>Infrared Signaling and how it works. </P>
+</B>
+<P>IR remotes operate by modulating (turning on and off) an infra red (IR) light source.  When the IR light source (the IR emitter) is "on" it is actually turning itself on and off thousands of times per second, too fast for the human eye to follow. The rate at which this occurs is called the carrier frequency.  The terminology comes from the metaphor that the "carrier" carries the "information". This is done to provide a better transmission system and allow the overall IR system (transmitter and receiver) to operate in noisy (with respect to light) environments.  It is important to understand that the IR receiver for a given remote is tuned to IR "carrier" frequency for that remote and will effectively not see IR signals sent on a different carrier frequency such as from other remotes. [Note:  The human eye can never see an infrared transmission, so the concept of on and off is not with regards to visible light.  Some equipment has a "telltale", a little red light that visibly flashes when the equipment receives IR signals.  That is what we can see] </P>
+
+<P>The "information" is placed on the "carrier" using several different techniques.  The
+most common technique is Pulse Width Modulation.  In Pulse Width Modulation the duration
+of the ON (carrier present, light flashing thousands of times per second), or Off (no light
+at all coming out of the IR emitter) periods is made to vary. Lets assume, because this is
+what is done, that we wish to send numbers representing what key has been pressed (and
+perhaps even what device this key is for). We first need to simplify the problem so that
+we don’t have deal with too many "Pulse widths". We can easily do this by representing the
+number in base 2, or binary. (I apologize if this now gets a little technical, but in
+reality it already has).  In binary there are only two digits to worry about not ten as
+in decimal. Therefore we only need to have two distinct "pulse widths".  If you think
+about it, the periods of on and off will need to alternate. If they didn’t it would be
+hard to judge their width.  [Note:  Other modulation schemes in particular RC5 do not
+use PWM.  RC5 uses Phase modulation.  Luckily for us we never have to decode or figure
+out the RC5 patterns because Philips has provided them as pure clean data. If you wish to
+know more about the RC-5 bi-phase method, read Guy Kuo's <a href="IR-bi-phase.shtml">document</a>.]  Only one of
+the widths needs to vary.  Either the width of the ON period or the Width of the Off
+period.</P>
+
+<P>In summary, IR transmission most often takes place by varying the on off times of an IR emitter to represent binary numbers according to some well established pattern.</P>
+
+<P>[Note: At this point I am going to assume that the reader has a basic understanding of the binary numbering system.  Not detailed enough to add, subtract or multiply them, but enough to be able to form the decimal value of a binary number.]</P>
+<B>
+</B><P>Each manufacturer has the option of deciding just how big a number he wishes to send to his equipment, and what meaning is given to that number (or numbers) when they are received.  Remember the environment through which the IR signals are passing (the air) is noisy in a light sense.  Bright sunlight, Fluorescent lights, all contribute to the noise. Some manufacturers add additional "redundant" information such as sending the numbers twice to ensure that they get to the equipment correctly.  Some do not.  I will discuss those details when I discuss some of the more common manufacturer’s products.</P>
+
+<B><P>The ProntoEdit HEX Format.</B> </P>
+<P> </P>
+<P>This discussion is only completely valid for IR transmissions using Pulse Width Modulation. Keep in mind that the sole purpose of the HEX data is to represent a series of ON and OFF times for the IR emitter, and when the IR emitter appear to be solidly ON its is rapidly flashing. </P>
+
+<P>The ProntoEdit HEX format uses a pair of numbers to represent an on/off sequence.  We will call this a "Burst Pair" (thanks to AHP).  The first digit represents an ON time and the second an Off time.  </P>
+
+<P>The question is how much time?  What the burst pair really contains is the number of cycles of the carrier for which to turn the light on and off.  The carrier frequency therefor acts as the clock (not totally true, but good enough for this discussion).  To illustrate the point, let us assume a carrier frequency of 40 kilohertz (that is 40,000 cycles per second).  This is a very common IR carrier frequency. One cycle of that carrier takes 1/40000 units of time or 25 microseconds.  A "burst pair" of 48,24 would turn the IR emitter on for 48*25 Microseconds, and off for 24*25 microseconds.  A "burst Pair" of 24,24 would turn the IR emitter on for 24*25 Microseconds, and off for 24*25 microseconds.  Because we are using binary numbers we only have two digits to represent (0,1) as opposed to decimal where we would need 10 unique burst pair patterns to represent the 10 decimal digits.  </P>
+<P>We could for example decide the encoding of a "1" will be represented by having the On period twice as long as the Off period, and a "0" by having them equal. We might choose 48,24  for the "1" and 24,24  for the "0".  In fact this is what Sony has done in its IR remotes. [Note: If you work through the numbers you will find that Sony IR signaling uses a sequence of 1200 microseconds of light followed by 600 microseconds of no light to represent a "1";  and a sequence of 600 microseconds of light followed by 600 microseconds of no light to represent a "0"].  In general all IR equipment is forgiving and operates with in a timing tolerance of +/- 10%.</P>
+
+<P>A full IR key code as encoded in the ProntoEdit Hex display contains three discrete parts.</P>
+
+<TABLE BORDER CELLSPACING=1 CELLPADDING=7 WIDTH=590>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Preamble</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>Burst Pair Sequence 1</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>Burst Pair Sequence 2</TD>
+</TR>
+</TABLE>
+
+
+<P>Either one of the burst pair sequences is optional so we will actually have three different patterns of IR encoding.</P>
+
+<TABLE BORDER CELLSPACING=1 CELLPADDING=7 WIDTH=590>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Preamble</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>Burst Pair Sequence 1</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>Burst Pair Sequence 2</TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Preamble</TD>
+<TD WIDTH="67%" VALIGN="TOP" COLSPAN=2>
+<P>Burst Pair Sequence 1</TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Preamble</TD>
+<TD WIDTH="67%" VALIGN="TOP" COLSPAN=2>
+<P>Burst Pair Sequence 2</TD>
+</TR>
+</TABLE>
+
+
+<P>The preamble does not contain Burst Pairs but rather four (4) hexadecimal (HEX, base 16) numbers, each of which has a precise meaning.  I will only discuss them in the context of Learned IR codes. Each Hex number consists of 4 digits.  </P>
+
+<OL>
+
+<LI>The first number is always a zero (0000) it indicates that the IR pattern is raw data, which means it was learned.</LI>
+
+<LI>The second number is the frequency of the IR carrier in terms of the Pronto internal clock.  The following formula where N represents the decimal value of this hex number will give you the frequency of the carrier in Kilohertz:<BR>
+Frequency = 1000000/(N * .241246)<BR>
+A Sony remote will usually have a value for N of 103 (this shows as 67 Hex).  Doing the arithmetic we have Freq=1000000/(103*. 241246)= 40,244 or approximately 40,000 cycles per second (well within a tolerance of 40,000 +/- 10%)</LI>
+
+<LI>The third number is the number of Burst Pairs in Burst Pair Sequence #1.  Each Burst pair consists of two 4 digit Hex numbers representing the On and Off time of that burst (single binary Bit).</LI>
+
+<LI>The fourth number is the number of Burst Pairs in Burst Pair Sequence #2.</LI></OL>
+
+
+<P>Burst Pair Sequence #1 starts at word 5 if it is present and is immediately followed by the digits of Burst Pair Sequence #2 if it is present (word 4&gt;0000).  If Sequence #1 is missing (word 3=0000), then Burst Sequence Number 2 starts at word 5.</P>
+
+<P> </P>
+<P>A Burst Pair Sequence usually looks as follows:</P>
+<P> </P>
+<TABLE BORDER CELLSPACING=1 CELLPADDING=7 WIDTH=590>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Lead in Burst Pair</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>Data Burst Pairs</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>Lead Out Burst Pair</TD>
+</TR>
+</TABLE>
+
+
+<P>The Lead In Burst pair can be thought of as the hello or wake up burst.  It tells the receiver to start listening (or rather looking) very closely as what is coming.  It is usually of different timing duration than the Burst Pairs in the data part.  Technically it is also used to set the receivers AGC level, a factor related to how much the receiver will amplify the IR light it sees.</P>
+
+<P>The Lead Out burst pair marks the end of the message and usually has a long OFF time period to guarantee that two IR messages can’t be sent too close together. It may actually be incorporated as part of the last data bit if the ON period is what carries the information (that is, the off time is constant in the data portion and the On time varies between two values).  Once again, Sony does exactly that.</P>
+
+<P>Remember all data in the IR Hex display is in Hex and to properly interpret these values you must convert them to decimal.  Two values should be considered equal if they are within about 10% of each other.  They don’t have to be exactly the same.</P>
+
+<P>[Digression to convert a 4 digit Hex "WXYZ" number to decimal, the following formula will work W*4096+X*256+Y*16+Z.  W,X,Y,Z represent HEX digits in the range 0-15 where a=10, b=11,c=12,d=13,e=14,f=15.  A hex value of 0067 is therefor 16*6+7=103)].</P>
+
+<P>If you understand all of what has been discussed so far you have based the basics of Binary Signaling 101.  Go take a breather.</P>
+
+<P>Before we look at some actual IR codes and their detailed formats, we should understand why there might be two burst sequences in the code and not always just one.  The first burst sequence is the Once sequence.   It is sent if you tap the button on the Pronto which has learned this code. The second burst sequence is called the Repeat sequence.  It is sent repeatedly as long as you hold the key on the Pronto down.  If you have used an IR remote you already know that all buttons do not "repeat".   The two sequences do not have to be the same.  In many cases they are, in others they are not.  This is generally manufacturer dependent.</P>
+
+<B><P>IR Codes</P>
+</B>
+<P>The world of IR remotes has become a commodity world.  IR remotes (simple ones, not the Pronto) are relatively inexpensive. I bought 5, credit card sized, universal remotes for $10. They are three times as thick as a credit card but the same height and width.  Fits nicely in a shirt pocket.  (A true couch potato must NEVER EVER be without a remote!).</P>
+
+<P>This has happened because there has been a large degree of standardization on the chips that generate the IR codes and receive them.  In fact there are only about 5 or 6 such chips being used.  Sony, Sharp, Toshiba, Philips and NEC are the most popular, with the NEC one being the most popular of all. The majority of the Asian rim manufacturers (except for Sony, Sharp, Toshiba, and Philips) use NEC chips and therefor NEC format.</P>
+
+<P>I will discuss the exact coding of two of these systems, Sony and NEC.  I believe Pioneer, Onkyo, Akai, Canon, Goldstar, Hitachi, Kenwood, NEC, Teac, and Yamaha all use the NEC chip.</P>
+
+<P>[Note: IR data is always transmitted least significant bit first so the first data bit sent is lowest order and in a real binary representation it would be the rightmost bit having a weight of 1.]</P>
+
+<P>SONY IR CODING.</P>
+
+<TABLE BORDER CELLSPACING=1 CELLPADDING=7 WIDTH=590>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<B><P>Parameter</B></TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<B><P>Decimal value</B></TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<B><P>HEX value</B></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Carrier Frequency </TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>40 khz</TD>
+<TD WIDTH="33%" VALIGN="TOP"> </TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Unit of burst time </TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P> 25 cycles of the carrier</TD>
+<TD WIDTH="33%" VALIGN="TOP"> </TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Lead In burst</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>96  24</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>0060  0018</TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>"1" Burst  Pattern</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>48  24</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>0030  0018</TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>"0" Burst Pattern</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>24  24 </TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>0018  0018</TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Lead Out</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>X, 1014</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>0018  03f6 or 0030 03f6</TD>
+</TR>
+</TABLE>
+
+<P>The lead out pattern in the Sony code is added to the last bit by increasing the off time.  It is NOT a separate burst of data.</P>
+
+<P>Sony data consists of a different number of bits in the message.  The first seven bits (the first seven burst pairs after the lead in burst) always represent the key pressed on the remote.  The next N bits where in is 5, 8, or 13 represents a device code.  Older Sony devices like a TV (no matter what its true model age, it is a device made by Sony for a long time so it is "old") uses a 12 bit code.  A newer one like the DVD S7000 uses a 20 bit code. Some remotes can control more than 1 device so they can send codes of different lengths.</P>
+
+<P>Here is an example from a Sony DVD S7000 as it appears in the ProntoEdit Hex Display</P>
+
+0000 0067 0000 0015 0060 0018 0018 0018 0030 0018<br>
+0030 0018 0030 0018 0018 0018 0030 0018 0018 0018<br>
+0018 0018 0030 0018 0018 0018 0030 0018 0030 0018<br>
+0030 0018 0018 0018 0018 0018 0030 0018 0018 0018<br>
+0018 0018 0030 0018 0018 03f6<br>
+
+<P>Let us break it up to decipher it.</P>
+
+<P>Preamble = 0000 0067 000 0015.  </P><DIR>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+
+<P>Word 1 = 	0 so it is a learned IR code</P>
+<P>Word 2 =	103 decimal which when plugged into the formula already given yields an IR Carrier frequency of about 40 khz. </P>
+<P>Word 3 = 	0000 is the length of the One Time Burst. There is no one time burst</P>
+<P>Word 4 = 	Decimal 21 is the length of the repeat burst. There are 21 bits (Burst pairs) in this code.  The code length is 20 bits plus 1 more pair for the Lead in.</P>
+
+<P>Word 5,6	0060 0018 (96,24 decimal) The lead in Burst . 4 units of on followed by 1 unit of off, where a unit is 600 microseconds</P>
+
+<P>Word 7,8	0018 0018 (24,24 decimal) Burst pair 1, bit 1 = "0"</P>
+<P>Word 9,10	0030 0018 (48,24 decimal) Burst Pair 2, bit 2 = "1"</P>
+<P>Word 11,12	0030 0018 (48,24 decimal) Burst Pair 3, bit 3 = "1"</P>
+<P>Word 13,14	0030 0018 (48,24 decimal) Burst Pair 4, bit 4 = "1"</P>
+<P>Word 15,16	0018 0018 (24,24 decimal) Burst Pair 5, bit 5 = "0"</P>
+<P>Word 17,18	0030 0018 (48,24 decimal) Burst Pair 6, bit 6 = "1"</P>
+<P>Word 19,20	0018 0018 (24,24 decimal) Burst Pair 7, bit 7 = "0"</P>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<P>The above is the function code as transmitted it is 0111010. Reversing the string so it is a true binary number with the least significant digit on the right  we get 0101110 which in decimal is 46.</P>
+
+<P>Continuing on to the device code we have</P>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+
+<P>Word 21,22	0018 0018 (24,24 decimal) Burst Pair 8, bit 1 = "0"</P>
+<P>Word 23,24	0030 0018 (48,24 decimal) Burst Pair 9, bit 2 = "1"</P>
+<P>Word 25,26	0018 0018 (24,24 decimal) Burst Pair 10, bit 3 = "0"</P>
+<P>Word 27,28	0030 0018 (48,24 decimal) Burst Pair 11, bit 4 = "1"</P>
+<P>Word 29,30	0030 0018 (48,24 decimal) Burst Pair 12, bit 5 = "1"</P>
+<P>Word 31,32	0030 0018 (48,24 decimal) Burst Pair 13, bit 6 = "1"</P>
+<P>Word 33,34	0018 0018 (24,24 decimal) Burst Pair 14, bit 7 = "0"</P>
+<P>Word 35,36	0018 0018 (24,24 decimal) Burst Pair 15, bit 8 = "0"</P>
+<P>Word 37,38	0030 0018 (48,24 decimal) Burst Pair 16, bit 9 = "1"</P>
+<P>Word 39,40	0018 0018 (24,24 decimal) Burst Pair 17, bit 10 = "0"</P>
+<P>Word 41,42	0018 0018 (24,24 decimal) Burst Pair 18, bit 11 = "0"</P>
+<P>Word 43,44	0030 0018 (48,24 decimal) Burst Pair 19, bit 12 = "1"</P>
+<P>Word 45,46	0018 03fc  (24,24 decimal) Burst Pair 20, bit 13 = "0"</P>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<P>The device code as transmitted is 0101110010010.  Reversing the order to make it a binary number we get 0100100111010.  Converting it to decimal we get 2362.</P>
+
+<P>This means that the Sony DVD S7000 has a device code of 2362 and this key has a function code of 46.  This is the discrete Power ON key.  If a Sony device has a discrete Power on Code it is normally 46.  Note the dead time on the second half of the last data burst pair.  Sony does not use a unique lead out, but rather adds the inter-message minimum time to the last data burst’s off period</P>
+
+<P>Sony codes are fairly simple.  Sony builds a lot of power into the IR senders, and good noise rejection in their receivers.  They use no redundancy or error checking in the code.</P>
+<P>NEC IR Code Format</P>
+
+<TABLE BORDER CELLSPACING=1 CELLPADDING=7 WIDTH=590>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<B><P>Parameter</B></TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<B><P>Decimal value</B></TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<B><P>HEX value</B></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Carrier Frequency </TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>40 khz</TD>
+<TD WIDTH="33%" VALIGN="TOP"> </TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Unit of burst time </TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P> 22 cycles of the carrier</TD>
+<TD WIDTH="33%" VALIGN="TOP"> </TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Lead In burst</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>342  171</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>0156  00ab</TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>"1" Burst  Pattern</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>22  96</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>0016  0060</TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>"0" Burst Pattern</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>22  24 </TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>0016  0016</TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="TOP">
+<P>Lead Out</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>22, 1427</TD>
+<TD WIDTH="33%" VALIGN="TOP">
+<P>0016  0593</TD>
+</TR>
+</TABLE>
+
+
+<P>Doing the arithmetic we see that this code uses a base time of 550 microseconds.  The lead in is a unique burst as is the lead out.  It is a pulse width modulation system where the information is carried in the length of the off time with a fixed duration of on time.</P>
+
+<P> </P>
+<P>The NEC message format is quite a bit more complicated then that of Sony.  It is always a 32-bit code. Which consists of 16 bits of data and 16 bits of error checking.  The code is divided into four 8-bit fields.</P>
+
+<TABLE BORDER CELLSPACING=1 CELLPADDING=7 WIDTH=577>
+<TR><TD WIDTH="17%" VALIGN="TOP">
+<P>Device Code</TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<P>Device code compliment</TD>
+<TD WIDTH="19%" VALIGN="TOP">
+<P>Function code </TD>
+<TD WIDTH="34%" VALIGN="TOP">
+<P>Function Code Compliment</TD>
+</TR>
+</TABLE>
+
+
+<P>A device code will be in the range of 0 to 255 or 256 discrete device codes.  The same is true of the function code.  The compliment fields are the 1’s compliment of the code they represent.  The device code and the device code compliment must add up to 255 or else there is an error.  The same is true of the function code and the function code compliment.  NEC uses a discrete lead in and a discrete lead out, so the total code length will take 34 burst pairs to represent as a Burst Pair Sequence.</P>
+
+<P>The following as an example of a Pioneer IR sequence for the CLD79 Elite Laser Disk Player.</P>
+
+0000 0067 0000 0022 0156 00ab 0016 0016 0016 0016 <br>
+0016 0016 0016 0060 0016 0016 0016 0060 0016 0016 <br>
+0016 0060 0016 0060 0016 0060 0016 0060 0016 0016 <br>
+0016 0060 0016 0016 0016 0060 0016 0016 0016 0016 <br>
+0016 0060 0016 0016 0016 0060 0016 0060 0016 0016 <br>
+0016 0016 0016 0016 0016 0060 0016 0016 0016 0060 <br>
+0016 0016 0016 0016 0016 0060 0016 0060 0016 0060 <br>
+0016 0593 <br>
+
+<P>If you work out all of the detailed analysis in a manner similar to that shown for the sony you should determine that the carrier frequency is indeed 40 khz, there are 34 total burst pairs in the one burst sequence used, and the burst sequence is repeatable.  The actual 32 bits of data  is:      00010101   11101010   01011000 10100111  Looking at the adjacent fields (1 & 2, 3 & 4) we see they are compliments of each other.  A short way of checking for compliments is that ones become zeros and zeros become ones.</P>
+
+<P>The device code as transmitted is 00010101.  Reversing it we get the binary value 10101000.  This is the decimal value of 128+32+8=168.</P>
+
+<P>The function code is transmitted as 01011000. Reversing it we get the binary number 00011010.  This is the decimal value 16+8+2=26.  </P>
+
+<P>This is the discrete Power On Code for the CLD 79</P>
+
+<P> </P>
+<B><P>Conclusion</P>
+</B>
+<P>Let me once again say thank you to all those who helped me with the deciphering of these codes.  I used to do it for a living but that was for some government agency and that is a whole other story.   All the help made it much faster and much more enjoyable.  If you are interested in finding out more about IR codes search the WWW.  Sci.Electronics FAQ is a good search parameter along with the word "IR code".  An article by Scott Coleman of Xanadu consulting sheds a lot of light on the Sony Control-S protocol.  An excellent article by Juergen Putger describes decoding IR remotes in general.  Once you find a couple of them, they will have links to the others.</P>
+
+<P> </P>
+<P> </P>
+<P> </P>
+<P> </P>
+<P>The decoding of the ProntoEdit IR window takes place in the same manner as that of the Sony code, but applying the NEC </P>
+</blockquote>
+
+<SCRIPT LANGUAGE="JavaScript">
+var randNum=get_random();
+document.write('<center><IFRAME NORESIZE=NORESIZE FRAMEBORDER=0 WIDTH=468 HEIGHT=60 MARGINWIDTH=0 ');
+document.write('MARGINHEIGHT=0 SCROLLING=NO SRC=/cgi-bin/banners.cgi?random='+randNum);
+document.write('></IFRAME></center>');
+
+//-->
+</SCRIPT>
+<p>
+
+<hr>
+<table cellpadding=5 width="100%">
+<tr><td>
+<center>
+<a href="/ofa/">Home</a> |
+<a href="/forums/">Forums</a> |
+<a href="/manuals/">Manuals</a> |
+<a href="/files/">Files</a> |
+<a href="/infrared/">Infra Red</a> |
+<a href="/jp1/">JP1 Upgrades</a> |
+<a href="/ofa/codes.shtml">Setup Codes</a> |
+<a href="/ofa/advanced.shtml">Advanced Codes</a> |
+<a href="/ofa/links.shtml">Links</a>
+</center>
+</td>
+</tr></table>
+<a href="http://www.GetSmartMusic.com/"><img src="/hr-images/spacer.gif" height=1 width=1 border=0></a>
+<a href="http://www.rockabilly.net/"><img src="/hr-images/spacer.gif" height=1 width=1 border=0></a>
+
+</body></html>
+
+
+
+
+
